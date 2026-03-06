@@ -140,6 +140,7 @@ Every sync operation automatically emits:
 ## Related
 
 - **[IAES](https://github.com/wertek-ai/iaes)** — The event specification this SDK implements
+- **[iaes.dev](https://iaes.dev)** — Browse the IAES specification online
 - **[Wertek AI](https://wertek.ai)** — The platform
 
 ## License
