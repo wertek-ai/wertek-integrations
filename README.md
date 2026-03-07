@@ -94,6 +94,7 @@ Every connector implements a `CanonicalAdapter` that transforms between IAES eve
 class MyAdapter(CanonicalAdapter):
     """Transform IAES events <-> MySystem native format."""
 
+    # ── v1.0 Core ──
     def health_event_to_external(self, event: AssetHealthEvent) -> Any:
         """IAES asset.health -> native format"""
         ...
@@ -113,9 +114,26 @@ class MyAdapter(CanonicalAdapter):
     def external_to_asset(self, data: Any) -> AssetEvent:
         """Native asset -> IAES AssetEvent (for inbound sync)"""
         ...
+
+    # ── v1.1 Additions ──
+    def completion_event_to_external(self, event: CompletionEvent) -> Any:
+        """IAES maintenance.completion -> native format"""
+        ...
+
+    def hierarchy_event_to_external(self, event: HierarchyEvent) -> Any:
+        """IAES asset.hierarchy -> native format"""
+        ...
+
+    def spare_part_usage_to_external(self, event: SparePartUsageEvent) -> Any:
+        """IAES maintenance.spare_part_usage -> native format"""
+        ...
+
+    def external_to_completion(self, data: Any) -> CompletionEvent:
+        """Native completion -> IAES CompletionEvent (for inbound sync)"""
+        ...
 ```
 
-Not all methods are required. Outbound-only connectors (PI System, MaintainX) skip `external_to_*`. Inbound-only skip `*_to_external`.
+Not all methods are required. Outbound-only connectors (PI System, MaintainX) skip `external_to_*`. Inbound-only skip `*_to_external`. v1.1 methods default to `NotImplementedError` — implement them as your connector supports the new event types.
 
 ## Connector Patterns
 
@@ -149,4 +167,4 @@ MIT
 
 ---
 
-*Wertek Integration SDK v1.0 — March 2026*
+*Wertek Integration SDK v1.1 — March 2026*
