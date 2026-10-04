@@ -1,0 +1,24 @@
+# OT — sending data to Wertek
+
+> **STATUS: planned.** No recipe here is written or verified yet. This page says what the
+> side is for, not what already works.
+
+For someone connecting **PLCs, meters, drives or SCADA** to Wertek: typically
+PLC / meter / drive → OPC UA, MQTT or Modbus → Node-RED → Wertek.
+
+## What goes here
+
+| Folder | Holds | Created when |
+|---|---|---|
+| `iaes/` | recipes that send IAES events (`CONTRACT: iaes`) | the first recipe exists |
+| `native/` | recipes that use Wertek's own API (`CONTRACT: wertek-native`) | the first recipe exists |
+
+Folders are created with their first recipe, not before. Every recipe follows
+[`docs/RECIPE_TEMPLATE.md`](../docs/RECIPE_TEMPLATE.md).
+
+## If you do both halves
+
+Many people understand both worlds. If you also need to act on the data (work orders,
+notifications), see [`it/`](../it/). When both sides use IAES, the event is the seam: one
+half can be built apart from the other and joined later. A join is only as good as what
+both halves agree a condition looks like, so check that before you rely on it.

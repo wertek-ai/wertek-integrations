@@ -1,0 +1,10 @@
+# Never commit credentials. Recipes read them from the environment or a secret store.
+.env
+.env.*
+*.pem
+*.key
+*.p12
+secrets.*
+credentials.*
+node_modules/
+__pycache__/

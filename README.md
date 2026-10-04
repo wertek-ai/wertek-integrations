@@ -1,4 +1,25 @@
-# Wertek Integration SDK
+# Wertek Integrations
+
+> Connect systems **to** Wertek (from OT) or **from** Wertek (into IT). Public, MIT-licensed,
+> and written for people and for coding agents.
+
+**STATUS: a skeleton.** The two sides below are `planned`. Nothing in them is verified yet.
+
+| You want to | Go to |
+|---|---|
+| Send data to Wertek from a PLC, meter, drive or SCADA | [`ot/`](ot/) |
+| Move data from Wertek into a CMMS, ERP, email or chat | [`it/`](it/) |
+
+Not everything Wertek does is [IAES](https://github.com/wertek-ai/iaes): each recipe declares
+`CONTRACT: iaes` or `CONTRACT: wertek-native`. Coding agents: read [`AGENTS.md`](AGENTS.md).
+Recipe format: [`docs/RECIPE_TEMPLATE.md`](docs/RECIPE_TEMPLATE.md).
+
+> **Everything below this line is the earlier Wertek Integration SDK (IAES 1.1, March 2026).**
+> It has not been reviewed against IAES 2.0 and is being reorganised under [`it/`](it/).
+
+---
+
+## Wertek Integration SDK (earlier version)
 
 > Build connectors that bridge industrial asset intelligence with enterprise systems — using the [IAES standard](https://github.com/wertek-ai/iaes).
 
