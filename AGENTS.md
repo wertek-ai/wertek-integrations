@@ -1,7 +1,7 @@
 # Working with this repository — for a person, or an agent working for one
 
-> **Status of this repository: a skeleton.** Every recipe below is `planned`. Nothing
-> here has been verified end to end yet, and nothing in it promises that it has.
+> **Status of this repository: one recipe verified** (`ot/iaes/asset-measurement-to-a-designated-position.md`,
+> 2026-10-04, with an executable acceptance). Every other recipe is `planned` and promises nothing.
 
 ## Choose a side
 
