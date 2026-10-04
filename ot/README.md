@@ -1,7 +1,7 @@
 # OT — sending data to Wertek
 
-> **STATUS: planned.** No recipe here is written or verified yet. This page says what the
-> side is for, not what already works.
+> **STATUS: one recipe verified** (2026-10-04): sending an `asset.measurement` to a designated
+> position. Everything else on this side is still `planned`.
 
 For someone connecting **PLCs, meters, drives or SCADA** to Wertek: typically
 PLC / meter / drive → OPC UA, MQTT or Modbus → Node-RED → Wertek.
@@ -10,7 +10,7 @@ PLC / meter / drive → OPC UA, MQTT or Modbus → Node-RED → Wertek.
 
 | Folder | Holds | Created when |
 |---|---|---|
-| `iaes/` | recipes that send IAES events (`CONTRACT: iaes`) | the first recipe exists |
+| `iaes/` | recipes that send IAES events (`CONTRACT: iaes`) — first: [`asset-measurement-to-a-designated-position.md`](iaes/asset-measurement-to-a-designated-position.md) with its executable [`acceptance`](iaes/acceptance_asset_measurement.py) | ✅ exists |
 | `native/` | recipes that use Wertek's own API (`CONTRACT: wertek-native`) | the first recipe exists |
 
 Folders are created with their first recipe, not before. Every recipe follows

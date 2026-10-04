@@ -3,7 +3,8 @@
 > Connect systems **to** Wertek (from OT) or **from** Wertek (into IT). Public, MIT-licensed,
 > and written for people and for coding agents.
 
-**STATUS: a skeleton.** The two sides below are `planned`. Nothing in them is verified yet.
+**STATUS: first recipe verified** (2026-10-04, `ot/iaes/`: a measurement to a designated position,
+with an executable acceptance). Everything else is still `planned`.
 
 | You want to | Go to |
 |---|---|
