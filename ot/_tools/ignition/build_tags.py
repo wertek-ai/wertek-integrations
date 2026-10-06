@@ -37,6 +37,9 @@ import java.lang.System as JSystem
 import java.time.Instant as Instant
 import java.time.temporal.ChronoUnit as ChronoUnit
 import java.util.UUID as UUID
+# In Jython a Java exception (java.io.IOException from httpClient) is NOT a Python Exception: `except Exception`
+# lets it escape and the error line below never appears. Found on a real Gateway (wertek-ai/iaes#54).
+import java.lang.Throwable as JavaThrowable
 log = system.util.getLogger("wertek.ingest")
 key = JSystem.getenv("WERTEK_API_KEY")
 asset = JSystem.getenv("WERTEK_ASSET_ID")
@@ -79,7 +82,7 @@ def send():
 			"X-API-Key": key, "Content-Type": "application/json", "User-Agent": "wertek-integrations-ignition/1.0"})
 		codes = [x.get("c") for x in (r.json or {}).get("results", [])] if r.json else []
 		log.info("sent %d events at %s -> HTTP %s codes %s skipped %s" % (len(events), stamp, r.statusCode, codes, skipped))
-	except Exception as e:
+	except (Exception, JavaThrowable) as e:
 		log.error("send failed: %s" % e)  # the key is never part of the message
 system.util.invokeAsynchronous(send)
 '''

@@ -92,8 +92,12 @@ ACCEPTANCE    (with IGNITION_URL and IGNITION_API_TOKEN exported, the Gateway en
               300 s), and any real source (the shipped tags are simulated).
 STATUS        verified 2026-10-06 · Ignition 8.3.9 (b2026082511), standard edition in trial mode, Docker on Ubuntu
               22.04, against api.wertek.ai (demo organisation, asset AST_E3CF6A82, position pump_process) · PASS
-              (11 checks) · a decoy run with a wrong Ignition API key ends in RESULT: FAIL at the first check.
-              Not verified: a real source tag; the Designer; Ignition on Windows; a licensed Gateway.
+              (11 checks; re-run PASS after the Java-exception fix) · a decoy run with a wrong Ignition API key ends in
+              RESULT: FAIL at the first check · the asset's Operation tab was then seen by a person showing flow
+              115.73 m³/h, head 32.36 m, power 15.37 kW, seal 56.74 °C, vibration 2.3 mm/s and a derived hydraulic
+              efficiency of 66.4 % (0.2725 x 115.73 x 32.36 / 15.37 = 66.40).
+              Not verified: a real source tag; the Designer; Ignition on Windows; a licensed Gateway; this script's
+              error path on a Gateway (the same catch was exercised on the same Gateway in wertek-ai/iaes#54).
 ```
 
 ## Verification report (2026-10-06)
@@ -117,6 +121,14 @@ RESULT: PASS
 Before the acceptance, the same Gateway had already sent two ticks 65 s apart (22:56:51Z and 22:57:56Z), both
 `HTTP 201` with five `100`. The key was counted, never printed: 0 times in the container log, 0 Gateway log files,
 0 Gateway configuration files.
+
+## A Java exception is not a Python exception
+
+In Ignition's Jython, an error raised by Java (for example `java.io.IOException` when the Gateway cannot reach
+`api.wertek.ai`) is **not** a Python `Exception`. The first version of this script caught only `Exception`, so a failed
+send escaped, Ignition logged a generic `Error running function from system.util.invokeAsynchronous`, and the recipe's own
+`send failed: …` line never appeared. It now catches `(Exception, java.lang.Throwable)`. Found on a real Gateway by the
+IAES reference scenario (`wertek-ai/iaes#54`), which has the same structure.
 
 ## Gateway API access, the two things that blocked us
 
