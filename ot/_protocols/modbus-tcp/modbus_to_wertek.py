@@ -43,28 +43,58 @@ def decode(regs: list[int], typ: str, word_order: str | None = None):
     return struct.unpack(fmt, raw)[0]
 
 
+def _fetch(client, dev: dict, base: int, fn: str, address: int, n: int):
+    """One read. Returns (registers, None) or (None, problem). The problem names the register, never the request."""
+    if fn not in ("holding", "input"):   # Modbus function 03 vs 04: a register lives in ONE of the two tables
+        return None, "function must be \"holding\" or \"input\""
+    read = client.read_input_registers if fn == "input" else client.read_holding_registers
+    try:
+        rr = read(int(address) - base, count=n, device_id=int(dev.get("unit_id", 1)))
+    except Exception as e:  # transport failure: name the exception type, not the secret-bearing request
+        return None, type(e).__name__
+    if rr.isError():
+        return None, "modbus error"
+    return list(rr.registers), None
+
+
+def _blocked_by_guards(client, m: dict, dev: dict, base: int) -> dict[str, str]:
+    """PRECONDITIONS: a register that must hold a known value for other registers to mean what the map says
+    (an energy unit prefix, a CT ratio, a scaling mode). {variable: why it is not sent}. FAILS CLOSED: a guard that
+    cannot be read blocks its variables, because an unchecked prefix is how a value ends up 1000 times off."""
+    blocked: dict[str, str] = {}
+    for g in m.get("guards", []):
+        name = g.get("name", f"{g.get('function', 'holding')}@{g['address']}")
+        regs, problem = _fetch(client, dev, base, g.get("function", "holding"), g["address"], TYPES[g["type"]][1])
+        if problem:
+            why = f"guard '{name}' could not be read ({problem}): nothing that depends on it is sent"
+        else:
+            got = decode(regs, g["type"], dev.get("word_order"))
+            if abs(got - float(g["equals"])) < 1e-6:
+                continue
+            why = f"guard '{name}' reads {got:g}, the map expects {g['equals']:g}" + (f" ({g['why']})" if g.get("why") else "")
+        for variable in g["applies_to"]:
+            blocked[variable] = why
+    return blocked
+
+
 def read_values(client, m: dict) -> tuple[list[dict], list[str]]:
     """Read every register of the map. Returns (readings, skipped). A register that cannot be read is
-    SKIPPED and named; a zero or a previous value is never sent in its place."""
+    SKIPPED and named; a zero or a previous value is never sent in its place. A variable whose `guards`
+    precondition does not hold is skipped and named too."""
     dev = m["device"]
     base = int(dev.get("address_base", 0))
     readings, skipped = [], []
+    blocked = _blocked_by_guards(client, m, dev, base)
     for r in m["registers"]:
         n = TYPES[r["type"]][1]
-        fn = r.get("function", "holding")
-        if fn not in ("holding", "input"):   # Modbus function 03 vs 04: a register lives in ONE of the two tables
-            skipped.append(f"{r['variable']}@{r['address']}: function must be \"holding\" or \"input\"")
+        if r["variable"] in blocked:
+            skipped.append(f"{r['variable']}@{r['address']}: {blocked[r['variable']]}")
             continue
-        read = client.read_input_registers if fn == "input" else client.read_holding_registers
-        try:
-            rr = read(int(r["address"]) - base, count=n, device_id=int(dev.get("unit_id", 1)))
-        except Exception as e:  # transport failure: name the register, not the secret-bearing request
-            skipped.append(f"{r['variable']}@{r['address']}: {type(e).__name__}")
+        regs, problem = _fetch(client, dev, base, r.get("function", "holding"), r["address"], n)
+        if problem:
+            skipped.append(f"{r['variable']}@{r['address']}: {problem}")
             continue
-        if rr.isError():
-            skipped.append(f"{r['variable']}@{r['address']}: modbus error")
-            continue
-        v = decode(list(rr.registers), r["type"], dev.get("word_order"))
+        v = decode(regs, r["type"], dev.get("word_order"))
         v = v * float(r.get("scale", 1)) + float(r.get("offset", 0))
         v = round(v, 6)                 # 62.3, not 62.300000000000004: scaling a float leaves noise
         if r.get("kind") == "boolean":

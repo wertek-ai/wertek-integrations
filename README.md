@@ -4,7 +4,7 @@
 > and written for people and for coding agents.
 
 <!-- recipes:begin -->
-**STATUS: 8 recipes — 8 verified · 0 draft · 0 planned.** Newest verification: 2026-10-06. Unless a recipe's own `STATUS` line names a real device, `verified` means it was run against the demo organisation with a simulated source (or by hand): read that line for what was NOT verified.
+**STATUS: 9 recipes — 9 verified · 0 draft · 0 planned.** Newest verification: 2026-10-06. Unless a recipe's own `STATUS` line names a real device, `verified` means it was run against the demo organisation with a simulated source (or by hand): read that line for what was NOT verified.
 <!-- recipes:end -->
 
 | You want to | Go to |
