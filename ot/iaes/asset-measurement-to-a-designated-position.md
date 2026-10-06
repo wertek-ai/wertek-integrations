@@ -122,7 +122,10 @@ DO NOT INFER  the position code or the variable keys (read them; do not derive t
               by a kit/gateway (410) may be re-pointed to your integration (ask the owner)
 IDEMPOTENCY   same event_id twice → 101, stored once · designating an existing code: not
               defined by this recipe — read the contract first and designate only if absent
-ACCEPTANCE    WERTEK_API_KEY=wk_… WERTEK_ASSET_ID=<asset> python ot/iaes/acceptance_asset_measurement.py
+CREDENTIALS   env WERTEK_API_KEY (scope iaes.ingest, one organisation, revocable from Settings →
+              API keys) · env WERTEK_ASSET_ID. Load the key without typing it on a command line:
+              see docs/API_KEY_HANDLING.md. Never a literal, never printed.
+ACCEPTANCE    (with both variables exported) python ot/iaes/acceptance_asset_measurement.py
               must print one line per event with OK and end in `RESULT: PASS`:
               temperature/Cel → 100 (or 504 if re-run inside 60 s) · door_open=1 → 100 ·
               door_open=true → 400 · humidity → 405 · temperature/degF → 406.

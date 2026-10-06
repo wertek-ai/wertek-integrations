@@ -20,6 +20,7 @@ OUTPUT        what it produces
 MAPPING       how fields correspond (cite the artifact; do not paraphrase it)
 PRESERVE      what must not be lost: provenance, ids, units
 DO NOT INFER  what is NOT defined, so the agent must ask instead of guessing
+CREDENTIALS   the environment variable NAMES it reads, their scope and how to revoke; never a value
 IDEMPOTENCY   what happens if it runs twice
 ACCEPTANCE    the command that shows it works, and what it must print
 STATUS        verified <date, how> | draft | planned
@@ -34,4 +35,6 @@ STATUS        verified <date, how> | draft | planned
 
 Never write a credential into a recipe, a flow, an example or a log. Show it as an
 environment variable or a secret-store reference. Use keys scoped to one organisation
-and revocable.
+and revocable. Every recipe fills the `CREDENTIALS` line of the Contract block with
+variable **names** only. The full rule, with safe patterns and the checklist for agents,
+is [`API_KEY_HANDLING.md`](API_KEY_HANDLING.md); `tools/check_credentials.py` runs in CI.
