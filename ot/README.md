@@ -1,8 +1,9 @@
 # OT — sending data to Wertek
 
-> **STATUS: four recipes verified.** (2026-10-04) sending an `asset.measurement` to a designated position;
-> (2026-10-05) reading a **Modbus TCP** device and sending it; sending from **Node-RED**; sending from **n8n**.
-> The last three fill a pump's panel on the demo organisation. Everything else on this side is still `planned`.
+> **STATUS: five recipes verified.** (2026-10-04) sending an `asset.measurement` to a designated position;
+> (2026-10-05) reading a **Modbus TCP** device, an **OPC UA** server, and sending from **Node-RED** and from **n8n**.
+> They were run against the demo organisation with a simulated pump (no real device yet). Everything else on this
+> side is still `planned`.
 
 For someone connecting **PLCs, meters, drives or SCADA** to Wertek: typically
 PLC / meter / drive → OPC UA, MQTT or Modbus → Node-RED → Wertek.
@@ -12,7 +13,7 @@ PLC / meter / drive → OPC UA, MQTT or Modbus → Node-RED → Wertek.
 | Folder | Holds | Created when |
 |---|---|---|
 | `iaes/` | recipes that send IAES events (`CONTRACT: iaes`) — first: [`asset-measurement-to-a-designated-position.md`](iaes/asset-measurement-to-a-designated-position.md) with its executable [`acceptance`](iaes/acceptance_asset_measurement.py) | ✅ exists |
-| `_protocols/` | recipes by **protocol**, for any brand — first: [`modbus-tcp/`](_protocols/modbus-tcp/modbus-tcp-to-a-designated-position.md) (reads a Modbus TCP device and sends it; for a pump it fills the pump panel) with its executable [`acceptance`](_protocols/modbus-tcp/acceptance_modbus_tcp.py) | ✅ exists |
+| `_protocols/` | recipes by **protocol**, for any brand — [`modbus-tcp/`](_protocols/modbus-tcp/modbus-tcp-to-a-designated-position.md) (reads a Modbus TCP device and sends it; for a pump it fills the pump panel) and [`opcua/`](_protocols/opcua/opcua-to-a-designated-position.md) (reads an OPC UA server, skips any node whose quality is not Good), each with an executable `acceptance` | ✅ exists |
 | `_tools/` | recipes by **integration tool**, for any source — [`node-red/`](_tools/node-red/node-red-to-a-designated-position.md) (a flow with an executable [`acceptance`](_tools/node-red/acceptance_node_red.py)) and [`n8n/`](_tools/n8n/n8n-to-a-designated-position.md) (a workflow; verified by hand, no command line) | ✅ exists |
 | `_common/` | the **send half** the protocol recipes share ([`wertek_send.py`](_common/wertek_send.py)): read the contract, designate, send, read one answer per event | ✅ exists |
 | `native/` | recipes that use Wertek's own API (`CONTRACT: wertek-native`) | the first recipe exists |

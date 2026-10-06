@@ -34,7 +34,7 @@ shown under the wrong label):
 | `winding_temp_c` | `°C` | motor winding temperature |
 | `seal_temp_c` | `°C` | seal temperature |
 
-These eight are the `pump` template the system offers when you designate a position. **The hydraulic
+These eight are the `pump` template the system offers when you designate a position. The panel's resolver reads all eight, but its layout **draws six tiles today** (hydraulic efficiency, flow, head, power, seal temperature, vibration): `pf`, `bearing_temp_c` and `winding_temp_c` are stored and read, and no tile shows them yet (their place is the *Drive Motor* stage, which wants a sub-asset of type `motor`). **The hydraulic
 efficiency is not sent**: the panel derives it from `flow_m3h`, `head_m` and `kw` (sending it is answered
 `405`). The panel only shows readings younger than **300 s**, so send at least every ~4 minutes if you want it
 to stay filled.
