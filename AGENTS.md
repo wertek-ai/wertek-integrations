@@ -1,7 +1,7 @@
 # Working with this repository — for a person, or an agent working for one
 
 <!-- recipes:begin -->
-**STATUS: 7 recipes — 7 verified · 0 draft · 0 planned.** Newest verification: 2026-10-06. Unless a recipe's own `STATUS` line names a real device, `verified` means it was run against the demo organisation with a simulated source (or by hand): read that line for what was NOT verified.
+**STATUS: 8 recipes — 8 verified · 0 draft · 0 planned.** Newest verification: 2026-10-06. Unless a recipe's own `STATUS` line names a real device, `verified` means it was run against the demo organisation with a simulated source (or by hand): read that line for what was NOT verified.
 <!-- recipes:end -->
 
 A recipe that is `planned` or `draft` promises nothing.
