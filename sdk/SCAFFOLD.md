@@ -1,5 +1,10 @@
 # Scaffold CLI — Create a New Connector
 
+> **Not runnable from this repository.** The scaffold CLI belongs to Wertek's own platform and is
+> not published here, so `python -m integrations.scaffold` fails for anyone outside it. This page is
+> kept as a description of the connector shape. For working material, see the recipes under
+> [`ot/`](../ot/) and [`it/`](../it/).
+
 The scaffold CLI generates all the boilerplate for a new connector, following the integration framework patterns.
 
 ## Usage

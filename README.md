@@ -63,24 +63,20 @@ Every connector follows the same pattern:
 | Directory | Contents |
 |-----------|----------|
 | `docs/` | Architecture overview, capability matrix, connector patterns |
-| `sdk/` | Adapter contracts, base classes, scaffold templates |
+| `sdk/` | Adapter contracts and base classes (reference for the connector shape) |
 | `examples/` | Example connector implementation |
 
-## Quick Start: Scaffold a New Connector
+## Building a connector inside Wertek
 
-```bash
-python -m integrations.scaffold acme_cmms \
-  --name "Acme CMMS" \
-  --category cmms \
-  --direction bidirectional
-```
-
-This generates 9 files + migration SQL. See [sdk/SCAFFOLD.md](sdk/SCAFFOLD.md) for details.
+> **The scaffold CLI is not in this repository.** It is part of Wertek's own platform, so the
+> command cannot be run from here. This section and `sdk/SCAFFOLD.md` describe the shape of a
+> connector for reference. To connect something today, use the recipes under [`ot/`](ot/) and
+> [`it/`](it/).
 
 ## Connector Lifecycle
 
 ```
-1. Scaffold      python -m integrations.scaffold <key>
+1. Scaffold      (Wertek-internal tool, not in this repository)
 2. Implement     Fill in client.py (API calls) + adapter.py (transforms)
 3. Register      plugin.py auto-registers on import
 4. Configure     Admin UI: credentials + sync settings (encrypted)

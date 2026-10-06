@@ -51,7 +51,7 @@ integrations/
   events.py             # EventBus (Redis Streams + in-process)
   help_registry.py      # ConnectorHelpRegistry (i18n help content)
   endpoints.py          # 13 API endpoints (/api/v1/integrations/*)
-  scaffold.py           # CLI: python -m integrations.scaffold <key>
+  scaffold.py           # Wertek-internal scaffolding tool (not in this repository)
 ```
 
 ## Sync Flow
@@ -77,7 +77,7 @@ BaseSyncService.sync(direction)
 ## Entity Mapping (Asset Traceability)
 
 ```
-Neo4j (Asset Graph)
+Wertek asset record
   Asset.id (UUID)
        |
        | wertek_id
