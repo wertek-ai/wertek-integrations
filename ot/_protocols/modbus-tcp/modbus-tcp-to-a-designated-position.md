@@ -63,7 +63,10 @@ SIDE          ot
 INPUT         a Modbus TCP device (holding registers by function 03, or input registers by function 04, declared per
               register with `function`) and a JSON register map written by a person: address, type (int16 uint16 int32
               uint32 float32 uint64 float64), scale, offset, variable key, unit. A value that spans several registers
-              REQUIRES `device.word_order` ("big"|"little"): it is refused without it, never defaulted
+              REQUIRES `device.word_order` ("big"|"little"): it is refused without it, never defaulted.
+              Optional `guards`: a register that must hold a known value (an energy prefix, a scaling mode) for the
+              variables in `applies_to` to be sent; if it differs, or cannot be read, those variables are skipped and
+              named (fails closed)
 OUTPUT        one IAES 2.0 `asset.measurement` per readable register, sent to POST /iaes/ingest; one answer
               per event from the ack catalogue (GET /iaes/schema/codes)
 MAPPING       register -> variable: written in the map, never inferred. The variable keys and units are those

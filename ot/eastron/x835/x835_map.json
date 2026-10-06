@@ -1,0 +1,27 @@
+{
+  "_about": "Eastron SMART X835 / SMARTRAIL X835 over Modbus TCP (RS485-to-TCP converter). Addresses and units from the manufacturer's X835 Modbus protocol (input registers, function 04, IEEE 754 floats, two registers per value). The word order is the manual's DEFAULT (most significant register first) and the meter lets you reverse it (holding register 'Register Order'). THE ENERGY PREFIX IS A SETTING: the manual's note says the user chooses k or M for the energy registers, and exposes it as holding register 'Energy Units Prefix' (0 = k, e.g. kWh; 1 = M, e.g. MWh). This map declares kWh, so it carries a GUARD: if that register is not 0 (or cannot be read) the energy value is NOT sent, because it would be 1000 times off. Set device.host / unit_id for your installation. A position holds at most 8 variables: this map is exactly 8.",
+  "device": {
+    "host": "192.0.2.22",
+    "port": 502,
+    "unit_id": 1,
+    "address_base": 0,
+    "word_order": "big",
+    "timeout_s": 3
+  },
+  "position": "meter_x835",
+  "guards": [
+    {"name": "energy units prefix", "function": "holding", "address": 30, "type": "float32", "equals": 0,
+     "applies_to": ["energy_import_kwh"],
+     "why": "0 = k (kWh); 1 = M (MWh): declare the unit your meter is set to, or set the meter to k"}
+  ],
+  "registers": [
+    {"function": "input", "address": 0,  "type": "float32", "variable": "voltage_l1",        "unit": "V"},
+    {"function": "input", "address": 2,  "type": "float32", "variable": "voltage_l2",        "unit": "V"},
+    {"function": "input", "address": 4,  "type": "float32", "variable": "voltage_l3",        "unit": "V"},
+    {"function": "input", "address": 46, "type": "float32", "variable": "current_avg",       "unit": "A"},
+    {"function": "input", "address": 52, "type": "float32", "scale": 0.001, "variable": "power_kw", "unit": "kW"},
+    {"function": "input", "address": 62, "type": "float32", "variable": "pf_total",          "unit": "1"},
+    {"function": "input", "address": 70, "type": "float32", "variable": "frequency_hz",      "unit": "Hz"},
+    {"function": "input", "address": 72, "type": "float32", "variable": "energy_import_kwh", "unit": "kWh"}
+  ]
+}
