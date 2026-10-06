@@ -4,15 +4,21 @@
 > March 2026) still sits at the repository root and has not been reviewed against
 > IAES 2.0. It is not covered by this page.
 
+<!-- recipes:begin -->
+**STATUS: no recipe yet.**
+
+_No recipe on this side yet._
+<!-- recipes:end -->
+
 For someone connecting **Wertek to a CMMS, ERP, email, chat or other business system**:
 typically Wertek → n8n or API → SAP PM, MaintainX, Fracttal, Odoo, email, Teams.
 
 ## What goes here
 
-| Folder | Holds | Created when |
+| Folder | Holds | State |
 |---|---|---|
-| `iaes/` | recipes that consume IAES events (`CONTRACT: iaes`) | the first recipe exists |
-| `native/` | recipes that use Wertek's own API (`CONTRACT: wertek-native`) | the first recipe exists |
+| `iaes/` | recipes that consume IAES events (`CONTRACT: iaes`) | none yet — the folder is created with its first recipe |
+| `native/` | recipes that use Wertek's own API (`CONTRACT: wertek-native`) | none yet — the folder is created with its first recipe |
 
 Folders are created with their first recipe, not before. Every recipe follows
 [`docs/RECIPE_TEMPLATE.md`](../docs/RECIPE_TEMPLATE.md).
