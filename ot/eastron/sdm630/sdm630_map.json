@@ -1,0 +1,71 @@
+{
+  "_about": "Eastron SDM630 over Modbus TCP (RS485-to-TCP converter or the SDM630-Modbus TCP variant). Addresses, types, function and units from the manufacturer's SDM630 Modbus protocol (V1.8, 'input registers, function 04, IEEE 754'). The word order is the manual's DEFAULT (most significant register first) and the meter lets you change it: if the converter or the meter was configured otherwise, change device.word_order. Set device.host / unit_id for your installation. A position holds at most 8 variables (the billing policy): this map is exactly 8.",
+  "device": {
+    "host": "192.0.2.20",
+    "port": 502,
+    "unit_id": 1,
+    "address_base": 0,
+    "word_order": "big",
+    "timeout_s": 3
+  },
+  "position": "meter_sdm630",
+  "registers": [
+    {
+      "function": "input",
+      "address": 0,
+      "type": "float32",
+      "variable": "voltage_l1",
+      "unit": "V"
+    },
+    {
+      "function": "input",
+      "address": 2,
+      "type": "float32",
+      "variable": "voltage_l2",
+      "unit": "V"
+    },
+    {
+      "function": "input",
+      "address": 4,
+      "type": "float32",
+      "variable": "voltage_l3",
+      "unit": "V"
+    },
+    {
+      "function": "input",
+      "address": 46,
+      "type": "float32",
+      "variable": "current_avg",
+      "unit": "A"
+    },
+    {
+      "function": "input",
+      "address": 52,
+      "type": "float32",
+      "scale": 0.001,
+      "variable": "power_kw",
+      "unit": "kW"
+    },
+    {
+      "function": "input",
+      "address": 62,
+      "type": "float32",
+      "variable": "pf_total",
+      "unit": "1"
+    },
+    {
+      "function": "input",
+      "address": 70,
+      "type": "float32",
+      "variable": "frequency_hz",
+      "unit": "Hz"
+    },
+    {
+      "function": "input",
+      "address": 72,
+      "type": "float32",
+      "variable": "energy_import_kwh",
+      "unit": "kWh"
+    }
+  ]
+}

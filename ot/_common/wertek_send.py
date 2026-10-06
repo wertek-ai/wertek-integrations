@@ -68,10 +68,16 @@ def ensure_position(cfg: dict, spec: dict) -> dict:
     (designating consumes one point of the organisation's pool, so this never designates twice)."""
     contract = read_contract(cfg)
     code = spec["code"]
-    if code not in {p["code"] for p in contract.get("positions", [])}:
+    have = {p["code"]: {v["key"] for v in p.get("variables", [])} for p in contract.get("positions", [])}
+    # The endpoint "designates OR COMPLETES" a position: re-sending a position that already exists adds the
+    # variables it lacks and consumes no new point. So a position left with fewer variables than the spec
+    # (an earlier, smaller version of the same recipe) is completed instead of answering 405 for the rest.
+    if code not in have or not {v["key"] for v in spec["variables"]} <= have[code]:
         st, d = http(cfg, "POST", f"/iaes/assets/{cfg['asset']}/measurement-points", spec)
         if st != 201:
-            sys.exit(f"could not designate position {code}: HTTP {st}")
+            # the server says WHY (e.g. more variables than one position may hold); it never contains the key
+            why = str((d or {}).get("detail") or "")[:300]
+            sys.exit(f"could not designate position {code}: HTTP {st} {why}".strip())
         contract = read_contract(cfg)
     return next(p for p in contract["positions"] if p["code"] == code)
 
