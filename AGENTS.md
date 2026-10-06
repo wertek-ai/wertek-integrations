@@ -32,6 +32,10 @@ Wertek does is IAES. See [`docs/RECIPE_TEMPLATE.md`](docs/RECIPE_TEMPLATE.md).
    [`docs/API_KEY_HANDLING.md`](docs/API_KEY_HANDLING.md). `python tools/check_credentials.py` enforces what a
    machine can check.
 4. **A passing validator is not conformance.** Run the recipe's `ACCEPTANCE`.
+   4-bis. **A variable's name chooses its road.** On `/iaes/ingest`, the names `power`, `energy`,
+   `reactive_power`, `power_factor`, `frequency`, `thd_voltage`, `thd_current`, `voltage` and `current` go to a
+   registered **energy meter**, not to a position. Read [`docs/ENERGY_METER_DOOR.md`](docs/ENERGY_METER_DOOR.md)
+   before sending energy data.
 5. **A person reviews the result.** Report: what you read, what you ran and what it
    printed, where the recipe was silent, and what you could not verify.
 

@@ -4,7 +4,8 @@
 converter, and you want Wertek to keep its readings as part of an asset's history.
 
 **What it is not for:** replacing the **Energy Gateway** that already feeds Wertek's energy module (a different door, with its own
-meter registry and license limits: see the Eastron SDM630 recipe, "Two doors"), writing to the meter, or reading its
+meter registry and license limits: see the Eastron SDM630 recipe, "Three doors", and
+[`docs/ENERGY_METER_DOOR.md`](../../../docs/ENERGY_METER_DOOR.md)), writing to the meter, or reading its
 harmonics, demand or tariffs.
 
 ## The idea, in one paragraph

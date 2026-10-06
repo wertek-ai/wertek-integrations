@@ -29,18 +29,19 @@ which unit, and this recipe never guesses. It reuses the Modbus connector of
 3. **Power is in watts.** The register holds W; the map applies `scale: 0.001` and declares the variable in **kW**. Wertek compares
    units and never converts: declaring `W` against a `kW` contract is answered `406`.
 
-## Two doors, and a name that changes the road
+## Three doors, and a name that changes the road
 
-Energy can reach Wertek through two doors, and they are not interchangeable:
+Energy can reach Wertek through three doors, and they are not interchangeable:
 
 | Door | For | What it does |
 |---|---|---|
-| **Energy Gateway** (`/energy/gateway/push`) | a customer's registered energy meter, license limits, the energy module's screens | meter registry, cadence per meter |
+| **Energy Gateway** (`/energy/gateway/push`) | a customer's registered energy meter fed by a Wertek gateway, the energy module's screens | meter registry, cadence per meter by the server's clock |
+| **IAES energy-meter door** (`/iaes/ingest`, energy names) | a registered energy meter fed by your own device or script, the energy module's screens | the asset id is the meter id; accepted by the **event's own time**, history up to 35 days, one reading per meter and time: [`docs/ENERGY_METER_DOOR.md`](../../../docs/ENERGY_METER_DOOR.md) |
 | **IAES position** (`/iaes/ingest`, this recipe) | any asset: a position with variables you designate | the position contract: variable, unit, cadence, one answer per event |
 
 **Trap:** the IAES endpoint routes by the variable's **exact name**. A `measurement_type` equal to `power`, `energy`,
 `frequency`, `power_factor`, `voltage`, `current`, `reactive_power`, `thd_voltage` or `thd_current` is sent to the **energy
-meter path** (with the asset id used as a meter id), *not* to your position. This map therefore uses `pf_total` and
+meter door** (with the asset id used as a meter id), *not* to your position. This map therefore uses `pf_total` and
 `frequency_hz` instead of `power_factor` and `frequency`. Pick variable names that are not on that list, unless you mean the
 energy door.
 
