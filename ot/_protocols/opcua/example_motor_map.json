@@ -1,0 +1,12 @@
+{
+  "server": {
+    "url": "opc.tcp://192.0.2.20:4840/",
+    "timeout_s": 5
+  },
+  "position": "pump_motor",
+  "nodes": [
+    {"namespace_uri": "urn:example:motor-protection-relay", "identifier": "BearingTemp", "variable": "bearing_temp_c", "unit": "°C"},
+    {"namespace_uri": "urn:example:motor-protection-relay", "identifier": "WindingTemp", "variable": "winding_temp_c", "unit": "°C"},
+    {"namespace_uri": "urn:example:motor-protection-relay", "identifier": "PowerFactor", "variable": "pf",             "unit": "1"}
+  ]
+}

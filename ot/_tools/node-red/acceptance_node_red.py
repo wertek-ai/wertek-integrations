@@ -60,7 +60,15 @@ def call(port: int) -> dict:
 
 tmp = Path(tempfile.mkdtemp(prefix="wertek-nr-"))
 flow_text = (HERE / "pump-process-to-wertek.flow.json").read_text(encoding="utf-8")
-(tmp / "flows.json").write_text(flow_text, encoding="utf-8")
+# The shipped flow also fires ITSELF every 60 s (its `inject` node). During an acceptance that second sender would land
+# inside the cadence of our own probe and be mistaken for a failure, so the copy under test has that timer switched
+# off: it fires only when probed. `flow_text` (the original) is what the key checks below read.
+_flow = json.loads(flow_text)
+for _n in _flow:
+    if _n.get("type") == "inject":
+        _n["repeat"] = ""
+        _n["once"] = False
+(tmp / "flows.json").write_text(json.dumps(_flow), encoding="utf-8")
 (tmp / "settings.js").write_text(
     "module.exports = { flowFile: 'flows.json', credentialSecret: false, editorTheme: { projects: { enabled: false } },"
     " logging: { console: { level: 'info', metrics: false, audit: false } } };\n", encoding="utf-8")
