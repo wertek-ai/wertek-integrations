@@ -83,7 +83,7 @@ One `asset.measurement` per reading, single object or a **top-level JSON list** 
 |---|---|---|
 | `1xx` | stored | `100` stored · `101` duplicate `event_id`, not stored again · `102` historical accepted |
 | `2xx` | stored with a warning | `200` position not covered by the pool · `204` outside `eu_low/eu_high` |
-| `4xx` | your message is wrong — do not retry as is | `400` envelope invalid (the IAES validator's own text) · `404` position not designated · `405` variable not in the contract · `406` unit mismatch · `407` dtype mismatch · `409` arrays · `410` position fed by another rail |
+| `4xx` | your message is wrong — do not retry as is | `400` envelope invalid (the IAES validator's own text) · `401` timestamp invalid (more than 5 min ahead; on the energy-meter door also older than 35 days) · `404` position not designated · `405` variable not in the contract · `406` unit mismatch · `407` dtype mismatch · `409` arrays · `410` position fed by another rail |
 | `5xx` | our side — retry | `500` storing failed · `503` rate limited (`retry_after_s`) · `504` faster than the contracted cadence, dropped |
 
 ## How booleans and states travel

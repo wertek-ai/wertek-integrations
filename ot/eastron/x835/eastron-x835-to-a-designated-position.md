@@ -4,7 +4,7 @@
 RS485-to-Ethernet converter, and you want Wertek to keep its readings as part of an asset's history.
 
 **What it is not for:** replacing the **Energy Gateway** that feeds Wertek's energy module (a different door: see the Eastron SDM630
-recipe, "Two doors"), writing to the meter, or reading its harmonics, demand or tariffs. **It is not a recipe for the Eastron X96:** that
+recipe, "Three doors", and [`docs/ENERGY_METER_DOOR.md`](../../../docs/ENERGY_METER_DOOR.md)), writing to the meter, or reading its harmonics, demand or tariffs. **It is not a recipe for the Eastron X96:** that
 is a different model, and its register document was not available to check this against.
 
 ## The idea, in one paragraph

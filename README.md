@@ -63,7 +63,7 @@ Every connector follows the same pattern:
 
 | Directory | Contents |
 |-----------|----------|
-| `docs/` | Architecture overview, capability matrix, connector patterns |
+| `docs/` | Architecture overview, capability matrix, connector patterns, API key handling, and [the energy-meter door of `/iaes/ingest`](docs/ENERGY_METER_DOOR.md) (which variable names reach the energy module, and how it answers) |
 | `sdk/` | Adapter contracts and base classes (reference for the connector shape) |
 | `examples/` | Example connector implementation |
 
