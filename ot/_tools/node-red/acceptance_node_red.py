@@ -36,7 +36,9 @@ if any(ch.isspace() for ch in ASSET) or "<" in ASSET:
 bin_ = os.environ.get("NODE_RED_BIN") or shutil.which("node-red")
 if not bin_:
     sys.exit("Node-RED not found: set NODE_RED_BIN (path to node-red or to red.js) or put `node-red` on the PATH")
-cmd = ["node", bin_] if bin_.endswith(".js") else [bin_]
+# Old Node-RED needs an old Node.js (the 2.x and 3.x lines crash on Node 23+ with `util.log is not a function`):
+# set NODE_BIN to the node you want it to run under; the default is `node` from the PATH.
+cmd = [os.environ.get("NODE_BIN", "node"), bin_] if bin_.endswith(".js") else [bin_]
 
 ok = True
 

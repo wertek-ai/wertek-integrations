@@ -1,0 +1,12 @@
+{
+  "broker": {"host": "192.0.2.30", "port": 1883, "tls": false, "keepalive": 30},
+  "position": "pump_process",
+  "listen_s": 5,
+  "topics": [
+    {"topic": "plant/pump1/flow",    "qos": 0, "variable": "flow_m3h",       "unit": "m³/h"},
+    {"topic": "plant/pump1/process", "qos": 0, "json_path": "head.m",        "variable": "head_m",         "unit": "m"},
+    {"topic": "plant/pump1/power",   "qos": 0, "scale": 0.1,                  "variable": "kw",             "unit": "kW"},
+    {"topic": "plant/pump1/seal",    "qos": 0, "json_path": "t", "ts_path": "at", "variable": "seal_temp_c", "unit": "°C"},
+    {"topic": "plant/pump1/vib",     "qos": 0, "variable": "vibration_mm_s", "unit": "mm/s"}
+  ]
+}
