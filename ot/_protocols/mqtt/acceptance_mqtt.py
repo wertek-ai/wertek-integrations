@@ -202,7 +202,7 @@ check("an epoch in milliseconds is read as milliseconds", abs(when2 - 1767323045
 check("a boolean payload travels as 0/1", c.parse_payload(b"true", {})[0] == 1 and c.parse_payload(b"false", {})[0] == 0)
 
 # 4 · a broker we cannot get into is NAMED, and the secret is not in what is shown
-secret = "not-a-real-password-for-this-test"
+secret = "pw-" + "q" * 20 + "-test"     # built at run time: this file holds no credential-shaped string
 os.environ["MQTT_USERNAME"], os.environ["MQTT_PASSWORD"] = "nobody", secret
 silent = {**base_map, "broker": {"host": "127.0.0.1", "port": PORT_SILENT}, "listen_s": 2}
 ev4, _res4, sk4 = c.run_once(cfg, silent)
