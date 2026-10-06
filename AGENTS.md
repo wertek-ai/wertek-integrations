@@ -23,7 +23,11 @@ Wertek does is IAES. See [`docs/RECIPE_TEMPLATE.md`](docs/RECIPE_TEMPLATE.md).
 1. **Do not infer what the recipe does not state.** Where it says `DO NOT INFER`, stop
    and ask the person. Where it is silent, say so in your report.
 2. **Check `STATUS` first.** `planned` and `draft` are not instructions to rely on.
-3. **Credentials never go into files.** Environment variables or a secret store only.
+3. **Credentials never go into files, command lines, URLs, logs or the chat.** Read the key from the
+   environment (`WERTEK_API_KEY`); if it is not set, stop and say so. Do not generate, guess or reuse one.
+   Never echo it to check it. Full rule, safe patterns and the agent checklist:
+   [`docs/API_KEY_HANDLING.md`](docs/API_KEY_HANDLING.md). `python tools/check_credentials.py` enforces what a
+   machine can check.
 4. **A passing validator is not conformance.** Run the recipe's `ACCEPTANCE`.
 5. **A person reviews the result.** Report: what you read, what you ran and what it
    printed, where the recipe was silent, and what you could not verify.

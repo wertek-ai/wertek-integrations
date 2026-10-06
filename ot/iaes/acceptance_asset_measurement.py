@@ -3,7 +3,10 @@
 Runs the whole recipe against a real Wertek organisation and prints what came back,
 event by event. It never prints the API key.
 
-    WERTEK_API_KEY=wk_...  WERTEK_ASSET_ID=<your asset>  python acceptance_asset_measurement.py
+    # load the key into the session WITHOUT typing it on a command line (docs/API_KEY_HANDLING.md):
+    read -rs -p "Wertek API key: " WERTEK_API_KEY; echo; export WERTEK_API_KEY
+    export WERTEK_ASSET_ID=<your asset>
+    python acceptance_asset_measurement.py
 
 Optional:
     WERTEK_BASE_URL       default https://api.wertek.ai

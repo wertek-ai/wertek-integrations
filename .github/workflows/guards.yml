@@ -1,0 +1,20 @@
+name: guards
+
+# No secrets are used or needed here. Pull requests from forks run this safely.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  credentials:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: The guard catches its decoys and lets the safe patterns through
+        run: python3 tools/test_check_credentials.py
+      - name: No credential in the tracked files
+        run: python3 tools/check_credentials.py
