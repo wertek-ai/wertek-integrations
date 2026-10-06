@@ -1,0 +1,162 @@
+[
+  {
+    "id": "pumpflow",
+    "type": "tab",
+    "label": "pump process -> Wertek",
+    "disabled": false,
+    "info": "Sends a pump's process variables to a designated Wertek position as IAES measurements.\nCredentials come from the ENVIRONMENT (WERTEK_API_KEY, WERTEK_ASSET_ID); nothing secret is in this flow.\nRecipe: ot/_tools/node-red/node-red-to-a-designated-position.md"
+  },
+  {
+    "id": "tick",
+    "type": "inject",
+    "z": "pumpflow",
+    "name": "every 60 s",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "60",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 120,
+    "y": 100,
+    "wires": [
+      [
+        "src"
+      ]
+    ]
+  },
+  {
+    "id": "probe",
+    "type": "http in",
+    "z": "pumpflow",
+    "name": "GET /pump/run (acceptance)",
+    "url": "/pump/run",
+    "method": "get",
+    "upload": false,
+    "swaggerDoc": "",
+    "x": 150,
+    "y": 160,
+    "wires": [
+      [
+        "src"
+      ]
+    ]
+  },
+  {
+    "id": "src",
+    "type": "function",
+    "z": "pumpflow",
+    "name": "the pump's instruments (SIMULATED: replace)",
+    "func": "// REPLACE THIS NODE with your real source (a Modbus, OPC UA or MQTT node, or a Ignition/PLC read).\n// It must leave msg.payload = { <wertek variable key>: <number> }. Here it SIMULATES a boiler-feed pump.\nconst t = Date.now() / 1000, r1 = (x) => Math.round(x * 10) / 10;\nmsg.payload = {\n  flow_m3h:       r1(412.5 + 5   * Math.sin(t / 30)),\n  head_m:         r1(85.2  + 0.5 * Math.sin(t / 45)),\n  kw:             r1(118.4 + 2   * Math.sin(t / 30)),\n  seal_temp_c:    r1(62.3  + 0.4 * Math.sin(t / 60)),\n  vibration_mm_s: r1(2.8   + 0.2 * Math.sin(t / 20))\n};\nmsg.simulated = true;\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 420,
+    "y": 130,
+    "wires": [
+      [
+        "build"
+      ]
+    ]
+  },
+  {
+    "id": "build",
+    "type": "function",
+    "z": "pumpflow",
+    "name": "build IAES events",
+    "func": "// Build one IAES 2.0 asset.measurement per number, and prepare the call. Nothing secret is written here:\n// the key and the asset come from the ENVIRONMENT of Node-RED (docs/API_KEY_HANDLING.md, rule 6).\nconst key = env.get(\"WERTEK_API_KEY\"), asset = env.get(\"WERTEK_ASSET_ID\");\nif (!key || !asset) {\n  node.error(\"set WERTEK_API_KEY and WERTEK_ASSET_ID in the environment of Node-RED (the key is never shown)\");\n  return null;\n}\nconst base = (env.get(\"WERTEK_BASE_URL\") || \"https://api.wertek.ai\").replace(/\\/+$/, \"\");\nconst position = env.get(\"WERTEK_POSITION_CODE\") || \"pump_process\";\n// the pump panel's channels: key == channel, unit == the channel's unit (it labels, it does not convert)\nconst UNITS = { flow_m3h: \"m³/h\", head_m: \"m\", kw: \"kW\", pf: \"1\", vibration_mm_s: \"mm/s\",\n                bearing_temp_c: \"°C\", winding_temp_c: \"°C\", seal_temp_c: \"°C\" };\nconst uuid = () => \"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx\".replace(/[xy]/g, (c) => {\n  const r = Math.random() * 16 | 0; return (c === \"x\" ? r : (r & 3 | 8)).toString(16); });\nconst when = new Date().toISOString().replace(/\\.\\d{3}Z$/, \"Z\"), corr = uuid(), events = [], skipped = [];\nfor (const [k, v] of Object.entries(msg.payload || {})) {\n  if (!(k in UNITS) || typeof v !== \"number\" || !isFinite(v)) { skipped.push(k); continue; }  // never invent a value\n  events.push({ spec_version: \"2.0\", event_id: uuid(), correlation_id: corr, event_type: \"asset.measurement\",\n    timestamp: when, source: \"wertek_integrations.node_red\",\n    dataschema: \"https://iaes.dev/schema/v2/asset.measurement\", asset: { asset_id: asset },\n    data: { measurement_type: k, value: v, unit: UNITS[k], location: position } });\n}\nif (!events.length) { node.warn(\"nothing to send; skipped: \" + skipped.join(\", \")); return null; }\nmsg.events = events; msg.skipped = skipped;\nmsg.method = \"POST\"; msg.url = base + \"/iaes/ingest\";\nmsg.headers = { \"X-API-Key\": key, \"Content-Type\": \"application/json\", \"User-Agent\": \"wertek-integrations-node-red/1.0\" };\nmsg.payload = events;\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 690,
+    "y": 130,
+    "wires": [
+      [
+        "send"
+      ]
+    ]
+  },
+  {
+    "id": "send",
+    "type": "http request",
+    "z": "pumpflow",
+    "name": "POST /iaes/ingest",
+    "method": "use",
+    "ret": "obj",
+    "paytoqs": "ignore",
+    "url": "",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "insecureHTTPParser": false,
+    "authType": "",
+    "senderr": false,
+    "headers": [],
+    "x": 930,
+    "y": 130,
+    "wires": [
+      [
+        "read"
+      ]
+    ]
+  },
+  {
+    "id": "read",
+    "type": "function",
+    "z": "pumpflow",
+    "name": "read the answers",
+    "func": "// One answer per event. A batch where NOTHING was accepted answers HTTP 422 and still carries them:\n// it is an answer, not a failure. 504 = faster than the contracted cadence (dropped, retryable).\nconst by = {}; ((msg.payload && msg.payload.results) || []).forEach((x) => { by[x.event_id] = x; });\nconst answers = msg.events.map((e) => { const x = by[e.event_id] || {};\n  return { key: e.data.measurement_type, value: e.data.value, c: x.c, d: x.d || null }; });\nconst fine = new Set([100, 101, 102, 504]);\nconst bad = answers.filter((a) => !fine.has(a.c));\nif (bad.length) node.warn(\"not stored: \" + bad.map((a) => a.key + \"=\" + a.c).join(\", \"));\nmsg.payload = { http: msg.statusCode, answers, skipped: msg.skipped, ok: bad.length === 0 };\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 690,
+    "y": 220,
+    "wires": [
+      [
+        "out",
+        "dbg"
+      ]
+    ]
+  },
+  {
+    "id": "out",
+    "type": "http response",
+    "z": "pumpflow",
+    "name": "",
+    "statusCode": "200",
+    "headers": {},
+    "x": 930,
+    "y": 200,
+    "wires": []
+  },
+  {
+    "id": "dbg",
+    "type": "debug",
+    "z": "pumpflow",
+    "name": "answers",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "x": 920,
+    "y": 260,
+    "wires": []
+  }
+]

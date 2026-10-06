@@ -1,0 +1,192 @@
+{
+  "name": "pump process -> Wertek",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "n1",
+      "name": "every minute",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "asset_id",
+              "value": "<paste your asset id>",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "position",
+              "value": "pump_process",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "n2",
+      "name": "config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "notes": "The asset id and the position code are NOT secrets. The API key is never here."
+    },
+    {
+      "parameters": {
+        "jsCode": "// REPLACE with your real source (an OPC UA / Modbus / MQTT / HTTP node). It must return ONE item whose json is\n// { <wertek variable key>: <number> }. Here it SIMULATES a boiler-feed pump.\nconst t = Date.now() / 1000, r1 = (x) => Math.round(x * 10) / 10;\nreturn [{ json: {\n  flow_m3h: r1(412.5 + 5 * Math.sin(t / 30)), head_m: r1(85.2 + 0.5 * Math.sin(t / 45)),\n  kw: r1(118.4 + 2 * Math.sin(t / 30)), seal_temp_c: r1(62.3 + 0.4 * Math.sin(t / 60)),\n  vibration_mm_s: r1(2.8 + 0.2 * Math.sin(t / 20)) } }];"
+      },
+      "id": "n3",
+      "name": "the pump's instruments (SIMULATED: replace)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build one IAES 2.0 asset.measurement per number. The asset id and the position come from the \"config\" node;\n// the API KEY is NOT here: the HTTP Request node takes it from an n8n credential (Header Auth).\nconst cfg = $('config').first().json;\nconst UNITS = { flow_m3h: \"m³/h\", head_m: \"m\", kw: \"kW\", pf: \"1\", vibration_mm_s: \"mm/s\",\n                bearing_temp_c: \"°C\", winding_temp_c: \"°C\", seal_temp_c: \"°C\" };\nconst uuid = () => \"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx\".replace(/[xy]/g, (c) => {\n  const r = Math.random() * 16 | 0; return (c === \"x\" ? r : (r & 3 | 8)).toString(16); });\nconst when = new Date().toISOString().replace(/\\.\\d{3}Z$/, \"Z\"), corr = uuid(), events = [], skipped = [];\nfor (const [k, v] of Object.entries($input.first().json)) {\n  if (!(k in UNITS) || typeof v !== \"number\" || !isFinite(v)) { skipped.push(k); continue; }   // never invent a value\n  events.push({ spec_version: \"2.0\", event_id: uuid(), correlation_id: corr, event_type: \"asset.measurement\",\n    timestamp: when, source: \"wertek_integrations.n8n\", dataschema: \"https://iaes.dev/schema/v2/asset.measurement\",\n    asset: { asset_id: cfg.asset_id }, data: { measurement_type: k, value: v, unit: UNITS[k], location: cfg.position } });\n}\nreturn [{ json: { events, skipped } }];"
+      },
+      "id": "n4",
+      "name": "build events",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.wertek.ai/iaes/ingest",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.events) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "n5",
+      "name": "POST /iaes/ingest",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        900,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "Wertek API key (X-API-Key)"
+        }
+      },
+      "notes": "Credential type: Header Auth. Name: X-API-Key. Value: your key. Create it in n8n; it is stored encrypted and never enters this file."
+    },
+    {
+      "parameters": {
+        "jsCode": "// One answer per event. A batch where NOTHING was accepted answers HTTP 422 and still carries them:\n// it is an answer, not a failure. 504 = faster than the contracted cadence (dropped, retry later).\nconst sent = $('build events').first().json, res = $input.first().json.body || {};\nconst by = {}; (res.results || []).forEach((x) => { by[x.event_id] = x; });\nconst answers = sent.events.map((e) => ({ key: e.data.measurement_type, value: e.data.value, c: (by[e.event_id] || {}).c }));\n// When Wertek refuses the CALL itself (401 = the key was not accepted or not sent), there are no per-event answers:\n// say why, with the server's own words (they never contain the key).\nconst why = (res.results ? null : (res.error || res.detail || res.message || \"no per-event results in the answer\"));\nreturn [{ json: { http: $input.first().json.statusCode, answers, skipped: sent.skipped,\n                  ok: answers.every((a) => [100, 101, 102, 504].includes(a.c)), why } }];"
+      },
+      "id": "n6",
+      "name": "read the answers",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "every minute": {
+      "main": [
+        [
+          {
+            "node": "config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "config": {
+      "main": [
+        [
+          {
+            "node": "the pump's instruments (SIMULATED: replace)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "the pump's instruments (SIMULATED: replace)": {
+      "main": [
+        [
+          {
+            "node": "build events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "build events": {
+      "main": [
+        [
+          {
+            "node": "POST /iaes/ingest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "POST /iaes/ingest": {
+      "main": [
+        [
+          {
+            "node": "read the answers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "tags": []
+}
