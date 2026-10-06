@@ -18,3 +18,12 @@ jobs:
         run: python3 tools/test_check_credentials.py
       - name: No credential in the tracked files
         run: python3 tools/check_credentials.py
+
+  recipe-status:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: The status guard catches its decoys
+        run: python3 tools/test_check_recipe_status.py
+      - name: README, AGENTS and the indexes say what the recipes say
+        run: python3 tools/check_recipe_status.py
