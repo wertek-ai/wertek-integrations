@@ -1,0 +1,22 @@
+{
+  "_about": "Carlo Gavazzi EM340 over Modbus TCP (RS485-to-TCP converter). Addresses, scale factors and word order from the manufacturer's EM340 communication protocol (v2 rev17, July 2021): values are INTEGERS with a scale factor, NOT IEEE floats; 32-bit values put the LEAST significant word first (device.word_order 'little'); the manual states that function codes 03 and 04 are interchangeable on this meter. Voltage is Volt*10, current Ampere*1000, power Watt*10 (declared here in kW: scale 0.1*0.001), power factor *1000 (INT16, one register), frequency Hz*10 (INT16), energy kWh*10. Set device.host / unit_id for your installation. A position holds at most 8 variables (the billing policy): this map is exactly 8.",
+  "device": {
+    "host": "192.0.2.21",
+    "port": 502,
+    "unit_id": 1,
+    "address_base": 0,
+    "word_order": "little",
+    "timeout_s": 3
+  },
+  "position": "meter_em340",
+  "registers": [
+    {"function": "input", "address": 0,  "type": "int32", "scale": 0.1,    "variable": "voltage_l1",        "unit": "V"},
+    {"function": "input", "address": 2,  "type": "int32", "scale": 0.1,    "variable": "voltage_l2",        "unit": "V"},
+    {"function": "input", "address": 4,  "type": "int32", "scale": 0.1,    "variable": "voltage_l3",        "unit": "V"},
+    {"function": "input", "address": 12, "type": "int32", "scale": 0.001,  "variable": "current_l1",        "unit": "A"},
+    {"function": "input", "address": 40, "type": "int32", "scale": 0.0001, "variable": "power_kw",          "unit": "kW"},
+    {"function": "input", "address": 49, "type": "int16", "scale": 0.001,  "variable": "pf_total",          "unit": "1"},
+    {"function": "input", "address": 51, "type": "int16", "scale": 0.1,    "variable": "frequency_hz",      "unit": "Hz"},
+    {"function": "input", "address": 52, "type": "int32", "scale": 0.1,    "variable": "energy_import_kwh", "unit": "kWh"}
+  ]
+}
