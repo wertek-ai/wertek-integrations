@@ -1,7 +1,8 @@
 # OT — sending data to Wertek
 
-> **STATUS: one recipe verified** (2026-10-04): sending an `asset.measurement` to a designated
-> position. Everything else on this side is still `planned`.
+> **STATUS: two recipes verified.** (2026-10-04) sending an `asset.measurement` to a designated position;
+> (2026-10-05) reading a **Modbus TCP** device and sending it, shown on a pump's panel. Everything else on this
+> side is still `planned`.
 
 For someone connecting **PLCs, meters, drives or SCADA** to Wertek: typically
 PLC / meter / drive → OPC UA, MQTT or Modbus → Node-RED → Wertek.
@@ -11,6 +12,8 @@ PLC / meter / drive → OPC UA, MQTT or Modbus → Node-RED → Wertek.
 | Folder | Holds | Created when |
 |---|---|---|
 | `iaes/` | recipes that send IAES events (`CONTRACT: iaes`) — first: [`asset-measurement-to-a-designated-position.md`](iaes/asset-measurement-to-a-designated-position.md) with its executable [`acceptance`](iaes/acceptance_asset_measurement.py) | ✅ exists |
+| `_protocols/` | recipes by **protocol**, for any brand — first: [`modbus-tcp/`](_protocols/modbus-tcp/modbus-tcp-to-a-designated-position.md) (reads a Modbus TCP device and sends it; for a pump it fills the pump panel) with its executable [`acceptance`](_protocols/modbus-tcp/acceptance_modbus_tcp.py) | ✅ exists |
+| `_common/` | the **send half** the protocol recipes share ([`wertek_send.py`](_common/wertek_send.py)): read the contract, designate, send, read one answer per event | ✅ exists |
 | `native/` | recipes that use Wertek's own API (`CONTRACT: wertek-native`) | the first recipe exists |
 
 Folders are created with their first recipe, not before. Every recipe follows

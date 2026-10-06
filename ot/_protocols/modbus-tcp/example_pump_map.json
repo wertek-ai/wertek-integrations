@@ -1,0 +1,18 @@
+{
+  "device": {
+    "host": "192.0.2.10",
+    "port": 502,
+    "unit_id": 1,
+    "address_base": 0,
+    "word_order": "big",
+    "timeout_s": 3
+  },
+  "position": "pump_process",
+  "registers": [
+    {"address": 100, "type": "int16", "scale": 0.1, "variable": "flow_m3h",       "unit": "m³/h"},
+    {"address": 101, "type": "int16", "scale": 0.1, "variable": "head_m",         "unit": "m"},
+    {"address": 102, "type": "int16", "scale": 0.1, "variable": "kw",             "unit": "kW"},
+    {"address": 103, "type": "int16", "scale": 0.1, "variable": "seal_temp_c",    "unit": "°C"},
+    {"address": 104, "type": "int16", "scale": 0.1, "variable": "vibration_mm_s", "unit": "mm/s"}
+  ]
+}
