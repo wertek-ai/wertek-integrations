@@ -78,6 +78,17 @@ DO NOT INFER  · that your tags are in the units of the table
               · that the tag provider is called `default` in your Gateway
               · Ignition versions other than 8.3.9; the Gateway API's security levels in your Gateway: an API key
                 cannot carry a role, so the Gateway's read/write permissions must accept the key's level
+LIMITS        this is a REFERENCE recipe, not a production connector:
+              · ONE asset and ONE position per Gateway: both come from the Gateway environment
+                (WERTEK_ASSET_ID, WERTEK_POSITION_CODE), so copying the tag folder for a second drive sends it
+                to the same asset and position. Several assets need a tag -> asset/position/variable mapping.
+              · no store-and-forward: when the send fails (no Internet), the error is logged and that sample is
+                LOST; nothing is queued for a later retry.
+              · the event time is the time of the tick (Instant.now()), not the timestamp Ignition holds for the
+                value. A connector that queues must send the value's own time, or late data arrives with the
+                wrong time.
+              · the 65 s tick is this example's (a 60 s position), not a recommended cadence: the position's
+                cadence decides.
 IDEMPOTENCY   every tick sends new event ids; a tick inside the cadence is answered 504 per event and logged as
               an answer, not as a failure. Re-importing the file with Overwrite replaces the tags, it does not
               duplicate them.
